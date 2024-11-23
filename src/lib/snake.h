@@ -15,4 +15,4 @@ void clearScreen();
 void initializeGame(Snake *snake, int *foodX, int *foodY, int *length);
 void printGame(Snake *snake, int length, int foodX, int foodY, int score);
 
-#endif 
+#endif

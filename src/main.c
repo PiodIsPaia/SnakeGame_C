@@ -1,14 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>  
-#include <windows.h> 
-#include "snake.h"
+#include <unistd.h>  
+#include <termios.h> 
+#include <fcntl.h>   
+#include "lib/snake.h"
 
-int main()
+int kbhit()
+{
+    struct termios oldt, newt;
+    int ch;
+    int oldf;
+
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);  
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+
+    ch = getchar();
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+    if(ch != EOF)
+    {
+        ungetc(ch, stdin);
+        return 1;
+    }
+
+    return 0;
+}
+
+int main(void)
 {
     Snake snake;
     int foodX, foodY, length;
-    int dx = 1, dy = 0; 
+    int dx = 1, dy = 0;
     int gameOver = 0;
     int score = 0;
 
@@ -16,9 +44,9 @@ int main()
 
     while (!gameOver)
     {
-        if (_kbhit())
-        { 
-            char ch = _getch();
+        if (kbhit())
+        {
+            char ch = getchar();
             switch (ch)
             {
             case 'w': // Cima
@@ -70,15 +98,15 @@ int main()
         {
             if (length < MAX_SNAKE_LENGTH)
             {
-                length++; 
-                score++;  
+                length++;
+                score++;
             }
-            foodX = rand() % (WIDTH - 2) + 1;  
+            foodX = rand() % (WIDTH - 2) + 1;
             foodY = rand() % (HEIGHT - 2) + 1;
         }
 
         printGame(&snake, length, foodX, foodY, score);
-        Sleep(100); 
+        usleep(100000); 
     }
 
     printf("Game Over! Seu score: %d\n", score);

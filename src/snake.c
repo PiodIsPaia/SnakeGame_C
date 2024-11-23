@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>   
-#include <windows.h> 
-#include "snake.h"
+#include <unistd.h>
+#include <string.h> 
+#include "lib/snake.h"
 
 void clearScreen()
 {
-    system("cls"); 
+#ifdef _WIN32
+    system("cls");
+#else
+    printf("\033[H\033[J");
+#endif
 }
 
 void initializeGame(Snake *snake, int *foodX, int *foodY, int *length)
@@ -15,8 +19,8 @@ void initializeGame(Snake *snake, int *foodX, int *foodY, int *length)
     snake->y[0] = HEIGHT / 2;
     *length = 1;
 
-    *foodX = rand() % (WIDTH - 2) + 1;  
-    *foodY = rand() % (HEIGHT - 2) + 1; 
+    *foodX = rand() % (WIDTH - 2) + 1;
+    *foodY = rand() % (HEIGHT - 2) + 1;
 }
 
 void printGame(Snake *snake, int length, int foodX, int foodY, int score)
@@ -31,16 +35,16 @@ void printGame(Snake *snake, int length, int foodX, int foodY, int score)
 
     for (int y = 0; y < HEIGHT; y++)
     {
-        printf("#"); 
+        printf("#");
         for (int x = 0; x < WIDTH; x++)
         {
             if (x == snake->x[0] && y == snake->y[0])
             {
-                printf("O"); 
+                printf("O");
             }
             else if (x == foodX && y == foodY)
             {
-                printf("*"); 
+                printf("*");
             }
             else
             {
@@ -49,23 +53,23 @@ void printGame(Snake *snake, int length, int foodX, int foodY, int score)
                 {
                     if (x == snake->x[i] && y == snake->y[i])
                     {
-                        printf("o"); 
+                        printf("o");
                         isBody = 1;
                         break;
                     }
                 }
                 if (!isBody)
                 {
-                    printf(" "); 
+                    printf(" ");
                 }
             }
         }
-        printf("#\n"); 
+        printf("#\n");
     }
 
     for (int x = 0; x < WIDTH + 2; x++)
     {
-        printf("#"); 
+        printf("#");
     }
     printf("\n");
 
